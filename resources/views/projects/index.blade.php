@@ -10,7 +10,10 @@
         <tr>
             <th>id</th>
             <th>title</th>
+
             <th>type</th>
+            <th>technology</th>
+
             <th>description</th>
             <th>url</th>
             <th>client</th>
@@ -27,9 +30,12 @@
                     {{ $project->title }}</a>
                 </td>
 
-                <td>{{ $project->type_id }}</td>
-
-                
+                <td>{{ $project->type->name ?? '' }}</td>
+                <td>
+                    @foreach ($project->technologies as $technology)
+                        {{ $technology->name }}{{ $loop->last ? '' : ', ' }}
+                    @endforeach
+                </td>
 
                 <td>{{ $project->description }}</td>
                 <td>{{ $project->url }}</td>

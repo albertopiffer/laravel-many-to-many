@@ -18,4 +18,24 @@ class Project extends Model
         'client',
         'slug',
     ];
+
+    public function type()
+    {
+        return $this->belongsTo(Type::class);
+    }
+
+    public function technologies()
+    {
+        return $this->belongsToMany(Technology::class);
+    }
+
+    public function getRelatedProject()
+    {
+        return $this->type->projects()->where('id', '!=', $this->id)->get();
+    }
+
+    public function getTechnologyIds()
+    {
+        return $this->technologies->pluck('id')->all();
+    }
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Project;
 use App\Models\Type;
+use App\Models\Technology;
 
 use Illuminate\Support\Str;
 
@@ -71,8 +72,9 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $types = Type::orderBy('name')->get();
+        $technologies = Technology::orderBy('name')->get();
 
-        return view('projects.edit', compact('project', 'types'));
+        return view('projects.edit', compact('project', 'types', 'technologies'));
     }
 
     public function validation(Request $request)
@@ -80,7 +82,8 @@ class ProjectController extends Controller
         return $request->validate([
 
             'title' => 'required|max:255|min:3',
-            'type_id' => 'required|exists:types,id',
+            'type_id' => 'exists:types,id',
+            'technologies' => 'exists:technologies,id',
             'description' => 'required|string',
             'url' => 'required|url',
             'client' => 'required|string',
@@ -97,8 +100,19 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
-        $data = $this->validation($request);
+        //dd($request->all());
+
+        //$data = $this->validation($request);
+        $data = $request->all();
+
+
         $project->update($data);
+
+        if (isset($data['technologies'])) {
+            $project->technologies()->sync($data['technologies']);
+        } else {
+            $project->technologies()->sync([]);
+        }
 
 
         return to_route('projects.show', $project);
